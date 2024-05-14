@@ -10,9 +10,11 @@ html, body {
     margin: 0;
     padding: 0;
 }
-
-/* disable forever*/
-
-body {
-    overflow: hidden;
+div.class{
+    text-align: center;    
+    background-color: white;
+    color: white;
+    font-size: 15px;
 }
+
+

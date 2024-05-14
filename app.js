@@ -82,9 +82,11 @@ io.sockets.on('connection', function(socket){
 		delete PLAYER_LIST[socket.id];
 	});
 
-    socket.on('sentMsgToServer',function(data){
-		var playerName = (""+socket.id).slice(2,7);
+    socket.on('sendMsgToServer',function(data){
+        console.log("server has recieved the submitted message");
+		var playerName = ""+(""+socket.id).slice(2,7);
 		for(var i in SOCKET_LIST) {
+            console.log("sent the message back to everyones HTML");
             SOCKET_LIST[i].emit('addToChat', playerName + ': ' + data);
         }
 	});

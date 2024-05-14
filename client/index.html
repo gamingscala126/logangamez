@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <title>Logangames specimen </title>
 </head>
+<body>
 <canvas id="ctx"></canvas>
-<!--<script src="src/player.js"></script>-->
 <link rel="stylesheet" href="client/style.css">
-
-<div id="chat-text" style="width:500px;height:100px;overflow-y:scroll">
-    <div>Hello!</div>
-</div>
 
 <form id="chat-form">
     <input id="chat-input" type="text" style="width:500px"></input>
 </form>
+
+<div id="chat-text" class="first">
+    <div>Hello!</div>
+</div>
+
+
 
 <script src="
 https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
@@ -48,16 +50,20 @@ https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
         }
 	});
 
-    socket.on('addToChat',function(data){
-        chatText.innerHTML += '<div>' + data + '</div>';
-    })
-    
     chatForm.onsubmit = function(e) {
+        console.log("submitted message");
         e.preventDefault();
 
         socket.emit('sendMsgToServer',chatInput.value);
         chatInput.value = '';
     }
+
+    socket.on('addToChat',function(data){
+        console.log("added everyones message");
+        chatText.innerHTML += '<div>'+  data  + '</div>';
+    });
+    
+    
 	document.onkeydown = function(event){
 		if(event.keyCode === 68)	//d
 			socket.emit('keyPress',{inputId:'right',state:true});
@@ -81,4 +87,5 @@ https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
 	}
  
 </script>
+</body>
 </html>
