@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Logangames specimen </title>
+</head>
+<canvas id="ctx"></canvas>
+<!--<script src="src/player.js"></script>-->
+<link rel="stylesheet" href="client/style.css">
+
+<div id="chat-text" style="width:500px;height:100px;overflow-y:scroll">
+    <div>Hello!</div>
+</div>
+
+<form id="chat-form">
+    <input id="chat-input" type="text" style="width:500px"></input>
+</form>
+
+<script src="
+https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+<script>
+    var chatText = document.getElementById('chat-text');
+    var chatInput = document.getElementById('chat-input');
+    var chatForm = document.getElementById('chat-form');
+    //colors for the works
+
+    canvas = document.getElementById("ctx")
+    canvas.width = 1200;
+    canvas.height = 600;
+    
+	var ctx = document.getElementById("ctx").getContext("2d");
+    
+	var socket = io();
+
+    
+
+	socket.on('newPositions',function(data){
+		ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+    ctx.fillRect((canvas.width/2)-350, (canvas.height/2)-250, 700, 500);
+ 
+    
+	for(var i = 0 ; i < data.length; i++){
+			//You need to put in a draw command
+            ctx = document.getElementById("ctx").getContext("2d");
+            ctx.fillStyle = "rgba("+data[i].red+", "+data[i].green+", "+data[i].blue+", 1)";
+            ctx.fillRect(data[i].x, data[i].y, 20, 20);
+        }
+	});
+
+    socket.on('addToChat',function(data){
+        chatText.innerHTML += '<div>' + data + '</div>';
+    })
+    
+    chatForm.onsubmit = function(e) {
+        e.preventDefault();
+
+        socket.emit('sendMsgToServer',chatInput.value);
+        chatInput.value = '';
+    }
+	document.onkeydown = function(event){
+		if(event.keyCode === 68)	//d
+			socket.emit('keyPress',{inputId:'right',state:true});
+		else if(event.keyCode === 83)	//s
+			socket.emit('keyPress',{inputId:'down',state:true});
+		else if(event.keyCode === 65) //a
+			socket.emit('keyPress',{inputId:'left',state:true});
+		else if(event.keyCode === 87) // w
+			socket.emit('keyPress',{inputId:'up',state:true});
+ 
+	}
+	document.onkeyup = function(event){
+		if(event.keyCode === 68)	//d
+			socket.emit('keyPress',{inputId:'right',state:false});
+		else if(event.keyCode === 83)	//s
+			socket.emit('keyPress',{inputId:'down',state:false});
+		else if(event.keyCode === 65) //a
+			socket.emit('keyPress',{inputId:'left',state:false});
+		else if(event.keyCode === 87) // w
+			socket.emit('keyPress',{inputId:'up',state:false});
+	}
+ 
+</script>
+</html>
