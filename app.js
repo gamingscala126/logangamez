@@ -61,8 +61,8 @@ var Player = function(id){
 	}
     self.collision = function(block)
     {
-        self.maxSpdX += 2*((self.x)-(block.x))*Math.random();
-        self.maxSpdY += 2*((self.y)-(block.y))*Math.random();
+        self.maxSpdX += ((self.x)-(block.x))*Math.random();
+        self.maxSpdY += ((self.y)-(block.y))*Math.random();
     }
 	return self;
 }
