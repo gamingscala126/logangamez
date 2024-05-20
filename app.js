@@ -13,12 +13,14 @@ console.log("Server started.");
  
 var SOCKET_LIST = [];
 var PLAYER_LIST = []; 
+
+var playerNumber = 0;
  
 var Player = function(id){
     
 	var self = {
-		x:((Math.random()*200)+300),
-		y:((Math.random()*200)+300),
+		x:((Math.random()*700)+250),
+		y:((Math.random()*470)+50),
         red: ""+(parseInt(Math.random()*255)),
         green: ""+(parseInt(Math.random()*255)),
         blue: ""+(parseInt(Math.random()*255)),
@@ -31,19 +33,25 @@ var Player = function(id){
 		maxSpdX: 0,
         maxSpdY: 0,
         active: true,
-        name: "Base"
+        name: "Dull",
+
+        travelRate: 1.5,
+        knockback: 1.4,
+
+        xtravel: 1,
+        ytravel: 1
 	}
 
 	self.updatePosition = function(){
         if(self.active){
             if(self.pressingRight)
-                self.maxSpdX += 1.5;
+                self.maxSpdX += self.travelRate*self.xtravel;
             if(self.pressingLeft)
-                self.maxSpdX -= 1.5;
+                self.maxSpdX -= self.travelRate*self.xtravel;
             if(self.pressingUp)
-                self.maxSpdY -= 1.5;
+                self.maxSpdY -= self.travelRate*self.ytravel;
             if(self.pressingDown)
-                self.maxSpdY += 1.5;
+                self.maxSpdY += self.travelRate*self.ytravel;
         }
 
         self.maxSpdX*=self.friction;
@@ -54,33 +62,34 @@ var Player = function(id){
 
         
 
-        if(self.x<=230 || self.x>=950 || self.y<=50 || self.y>=550)
+        if(self.x<=230 || self.x>=950 || self.y<=40 || self.y>=550)
         {
-                self.active = false;
+            self.active = false;
         }
 
 	}
     self.collision = function(block)
     {
-        self.maxSpdX += 1.4*((self.x)-(block.x))*Math.random();
-        self.maxSpdY += 1.4*((self.y)-(block.y))*Math.random();
+        self.maxSpdX += self.knockback*((self.x)-(block.x))*Math.random();
+        self.maxSpdY += self.knockback*((self.y)-(block.y))*Math.random();
     }
 	return self;
 }
- 
+
 var io = require('socket.io')(serv,{});
 io.sockets.on('connection', function(socket){
 	socket.id = Math.random();
 	SOCKET_LIST[socket.id] = socket;
     
-    var username = 'The Trans';
+
 
 	var player = Player(socket.id);
 
 	PLAYER_LIST[socket.id] = player;
- 
     
- 
+    var username = "Player "+parseInt(Math.random()*20);
+    PLAYER_LIST[socket.id].name = username;
+
 	socket.on('disconnect',function(){
 		delete SOCKET_LIST[socket.id];
 		delete PLAYER_LIST[socket.id];
@@ -111,6 +120,7 @@ io.sockets.on('connection', function(socket){
 			player.pressingDown = data.state;
 	}); 
 });
+
 
 
 
@@ -155,4 +165,76 @@ setInterval(function(){
         }
     }
 },1000/25);
+
+setInterval(function(){
+
+    //reset to defaults
+    for(var i in PLAYER_LIST)
+    {
+        PLAYER_LIST[i].friction = 0.9;
+        PLAYER_LIST[i].travelRate = 1.5;
+        PLAYER_LIST[i].knockback = 1.4;
+
+        PLAYER_LIST[i].xtravel = 1;
+        PLAYER_LIST[i].ytravel = 1;
+    }
+
+    var eventNumber = parseInt(Math.random()*5);
+
+    if(eventNumber === 0){
+        //SLIP event, everyone has zero friction now, for some time
+        for(var i in PLAYER_LIST){
+            PLAYER_LIST[i].friction = 1;
+
+            var socket = SOCKET_LIST[i];
+            socket.emit('event', eventNumber);
+        }
+    }
+    if(eventNumber === 1){
+        //SPEED event, everyone travel time has been increased by a grand amount
+        for(var i in PLAYER_LIST){
+            PLAYER_LIST[i].travelRate = 4;
+
+            var socket = SOCKET_LIST[i];
+            socket.emit('event', eventNumber);
+        }
+    }
+    if(eventNumber === 2){
+        //KNOCKBACK event, everyones knockback velocity has increased
+        for(var i in PLAYER_LIST){
+            PLAYER_LIST[i].knockback = 3.3;
+
+            var socket = SOCKET_LIST[i];
+            socket.emit('event', eventNumber);
+        }
+    }
+    if(eventNumber === 3){
+        //BLIGHT event, your control over the player has been disordered!
+                
+        for(var i in PLAYER_LIST){
+            PLAYER_LIST[i].friction = 0.95;
+            PLAYER_LIST[i].xtravel = 2 - Math.random()*4;
+            PLAYER_LIST[i].ytravel = 2 - Math.random()*4;
+            PLAYER_LIST[i].knockback = 0.8;
+
+            var socket = SOCKET_LIST[i];
+            socket.emit('event', eventNumber);
+        }
+    }
+
+    if(eventNumber === 4){
+        //FRENZY event, everyones stats are to be randomized!!!
+        for(var i in PLAYER_LIST){
+            PLAYER_LIST[i].friction = 0.9+Math.random()*0.2;
+            PLAYER_LIST[i].travelRate = 0+Math.random()*5;
+            PLAYER_LIST[i].knockback = 0.5+Math.random()*4;
+
+            var socket = SOCKET_LIST[i];
+            socket.emit('event', eventNumber);
+        }
+    }
+    
+
+
+},20000)
 

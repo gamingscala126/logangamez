@@ -13,6 +13,8 @@
 <canvas id="ctx"></canvas>
 <link rel="stylesheet" href="client/style.css">
 
+<div id='events' class='eventful'>Event: No current event</div>
+
 <form id="chat-form" class="first">
     <input id="chat-input" type="text" style="width:500px"></input>
 </form>
@@ -22,7 +24,18 @@
     <div>Welcome To the Logangames! Chat using the box above.</div>
 </div>
 
-
+<div>
+    -
+</div>
+<div>
+    -
+</div>
+<div>
+    -
+</div>
+<div>
+    -
+</div>
 
 <script src="
 https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
@@ -33,6 +46,8 @@ https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
 
     var userInput = document.getElementById('user-input');
     var userForm = document.getElementById('chat-username');
+
+    var events = document.getElementById('events');
     //colors for the works
 
     canvas = document.getElementById("ctx")
@@ -49,6 +64,29 @@ https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
 		ctx.clearRect(0,0,canvas.width, canvas.height);
         ctx.fillStyle = "white";
     ctx.fillRect((canvas.width/2)-350, (canvas.height/2)-250, 700, 500);
+
+    socket.on('event',function(data){
+        if(data === 0)
+        {
+            events.innerHTML = "Event: Slippery Slope! Your Friction is now 0.";
+        }
+        if(data === 1)
+        {
+            events.innerHTML = "Event: Speed it up! Your Speed has increased!";
+        }
+        if(data === 2)
+        {
+            events.innerHTML = "Event: Watch Scala! Your knockback has increased!"
+        } 
+        if(data === 3)
+        {
+            events.innerHTML = "The blight of Z! Hard to control the player now!"
+        } 
+        if(data === 4)
+        {
+            events.innerHTML = "FRENZY!!!! ALL STATS ARE RANDOMIZED."
+        } 
+    })
  
     
 	for(var i = 0 ; i < data.length; i++){
