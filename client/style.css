@@ -10,11 +10,26 @@ html, body {
     margin: 0;
     padding: 0;
 }
-div.class{
-    text-align: center;    
-    background-color: white;
-    color: white;
-    font-size: 15px;
+
+div.first{
+    text-align: left;    
+    /*background-color: white;*/
+    color: black;
+    font-size: 20px;
+    border: 1px solid black;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 900px;
+    margin-left: 0px;
+    background-color: lightblue;
+} 
+form.first {
+    text-align: left;
+}
+form.last {
+    text-align: center;
+    margin-bottom: 20;
+    margin-top: 20;
 }
 
 

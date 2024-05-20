@@ -5,15 +5,21 @@
     <title>Logangames specimen </title>
 </head>
 <body>
+    <h1>Enter Username Below. Press Enter.</h1>
+<form id="chat-username" class="last">
+    <input id="user-input" type="text" style="width:200px"></input>
+</form>
+
 <canvas id="ctx"></canvas>
 <link rel="stylesheet" href="client/style.css">
 
-<form id="chat-form">
+<form id="chat-form" class="first">
     <input id="chat-input" type="text" style="width:500px"></input>
 </form>
 
+
 <div id="chat-text" class="first">
-    <div>Hello!</div>
+    <div>Welcome To the Logangames! Chat using the box above.</div>
 </div>
 
 
@@ -24,6 +30,9 @@ https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
     var chatText = document.getElementById('chat-text');
     var chatInput = document.getElementById('chat-input');
     var chatForm = document.getElementById('chat-form');
+
+    var userInput = document.getElementById('user-input');
+    var userForm = document.getElementById('chat-username');
     //colors for the works
 
     canvas = document.getElementById("ctx")
@@ -43,13 +52,26 @@ https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
  
     
 	for(var i = 0 ; i < data.length; i++){
-			//You need to put in a draw command
             ctx = document.getElementById("ctx").getContext("2d");
             ctx.fillStyle = "rgba("+data[i].red+", "+data[i].green+", "+data[i].blue+", 1)";
             ctx.fillRect(data[i].x, data[i].y, 20, 20);
+
+            ctx = document.getElementById("ctx").getContext("2d");
+            ctx.font = '18px Arial';
+            ctx.fillStyle='black';
+            ctx.textAlign = 'center';
+            ctx.stroke();
+            ctx.fillText(""+(data[i].name), (data[i].x)+10, (data[i].y)-8 );
         }
 	});
+    
+    userForm.onsubmit = function(e) {
+        console.log("submitted new user");
+        e.preventDefault();
 
+        socket.emit('sendUserToServer',userInput.value);
+        userInput.value = '';
+    }
     chatForm.onsubmit = function(e) {
         console.log("submitted message");
         e.preventDefault();

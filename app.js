@@ -30,7 +30,8 @@ var Player = function(id){
         friction: 0.9,
 		maxSpdX: 0,
         maxSpdY: 0,
-        active: true
+        active: true,
+        name: "Base"
 	}
 
 	self.updatePosition = function(){
@@ -71,11 +72,14 @@ var io = require('socket.io')(serv,{});
 io.sockets.on('connection', function(socket){
 	socket.id = Math.random();
 	SOCKET_LIST[socket.id] = socket;
- 
+    
+    var username = 'The Trans';
 
 	var player = Player(socket.id);
-	PLAYER_LIST[socket.id] = player;
 
+	PLAYER_LIST[socket.id] = player;
+ 
+    
  
 	socket.on('disconnect',function(){
 		delete SOCKET_LIST[socket.id];
@@ -84,11 +88,16 @@ io.sockets.on('connection', function(socket){
 
     socket.on('sendMsgToServer',function(data){
         console.log("server has recieved the submitted message");
-		var playerName = ""+(""+socket.id).slice(2,7);
 		for(var i in SOCKET_LIST) {
             console.log("sent the message back to everyones HTML");
-            SOCKET_LIST[i].emit('addToChat', playerName + ': ' + data);
+            SOCKET_LIST[i].emit('addToChat', username + ': ' + data);
         }
+	});
+    
+    socket.on('sendUserToServer',function(data){
+        console.log("server has recieved the submitted username");
+		username = data;
+        PLAYER_LIST[socket.id].name = username;
 	});
  
 	socket.on('keyPress',function(data){
@@ -100,9 +109,7 @@ io.sockets.on('connection', function(socket){
 			player.pressingUp = data.state;
 		else if(data.inputId === 'down')
 			player.pressingDown = data.state;
-	});
- 
- 
+	}); 
 });
 
 
@@ -117,7 +124,8 @@ setInterval(function(){
 			y:player.y,
             red:player.red,
             green:player.green,
-            blue:player.blue
+            blue:player.blue,
+            name:player.name
 		});		
 	}
 	for(var i in SOCKET_LIST){
